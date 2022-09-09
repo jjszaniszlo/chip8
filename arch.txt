@@ -1,0 +1,39 @@
+
+nnn = address
+kk  = 1 byte or 8bit value
+n   = 4bit value
+x   = 1st register #
+y   = 2nd register #
+
+d   = direct. the passed in values are those values.
+i   = inderect. the passed in values are references.
+v   = register reference
+
+CLS             00E0
+RET             00EE
+SYS    addr     0nnn
+JP     addr     1nnn
+CALL   addr     2nnn
+SE     x kk     3xkk
+SNE    x kk     4xkk
+SE     x y      5xy0
+LD     x kk     6xkk
+ADD    x kk     7xkk
+LD     x y      8xy0
+OR     x y      8xy1
+AND    x y      8xy2
+XOR    x y      8xy3
+ADD    x y      8xy4
+SUB    x y      8xy5
+ASR    x y      8xy6
+SUB    x y      8xy7
+ASL    x y      8xyE
+SNE    x y      9xy0
+LD     addr     Annn  
+JP     addr     Bnnn
+RND    x addr   Cxkk
+DRW    x y n    Dxyn
+KPS    x        Ex9E
+NPS    x        ExA1
+LD     x        Fx07
+LDK    x        Fx0A
