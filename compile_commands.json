@@ -1,0 +1,146 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-g",
+      "-Wall",
+      "-D_THREAD_SAFE",
+      "-Iinclude",
+      "-I/opt/homebrew/include",
+      "-c",
+      "-o",
+      "build/obj/app.o",
+      "src/app.c"
+    ],
+    "directory": "/Users/jjszaniszlo/Dev/EMULATION/chip8C",
+    "file": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/src/app.c",
+    "output": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/build/obj/app.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-g",
+      "-Wall",
+      "-D_THREAD_SAFE",
+      "-Iinclude",
+      "-I/opt/homebrew/include",
+      "-c",
+      "-o",
+      "build/obj/cpu.o",
+      "src/cpu.c"
+    ],
+    "directory": "/Users/jjszaniszlo/Dev/EMULATION/chip8C",
+    "file": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/src/cpu.c",
+    "output": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/build/obj/cpu.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-g",
+      "-Wall",
+      "-D_THREAD_SAFE",
+      "-Iinclude",
+      "-I/opt/homebrew/include",
+      "-c",
+      "-o",
+      "build/obj/glad.o",
+      "src/glad.c"
+    ],
+    "directory": "/Users/jjszaniszlo/Dev/EMULATION/chip8C",
+    "file": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/src/glad.c",
+    "output": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/build/obj/glad.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-g",
+      "-Wall",
+      "-D_THREAD_SAFE",
+      "-Iinclude",
+      "-I/opt/homebrew/include",
+      "-c",
+      "-o",
+      "build/obj/io.o",
+      "src/io.c"
+    ],
+    "directory": "/Users/jjszaniszlo/Dev/EMULATION/chip8C",
+    "file": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/src/io.c",
+    "output": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/build/obj/io.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-g",
+      "-Wall",
+      "-D_THREAD_SAFE",
+      "-Iinclude",
+      "-I/opt/homebrew/include",
+      "-c",
+      "-o",
+      "build/obj/main.o",
+      "src/main.c"
+    ],
+    "directory": "/Users/jjszaniszlo/Dev/EMULATION/chip8C",
+    "file": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/src/main.c",
+    "output": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/build/obj/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-g",
+      "-Wall",
+      "-D_THREAD_SAFE",
+      "-Iinclude",
+      "-I/opt/homebrew/include",
+      "-c",
+      "-o",
+      "build/obj/render/render.o",
+      "src/render/render.c"
+    ],
+    "directory": "/Users/jjszaniszlo/Dev/EMULATION/chip8C",
+    "file": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/src/render/render.c",
+    "output": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/build/obj/render/render.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-g",
+      "-Wall",
+      "-D_THREAD_SAFE",
+      "-Iinclude",
+      "-I/opt/homebrew/include",
+      "-c",
+      "-o",
+      "build/obj/render/render_init.o",
+      "src/render/render_init.c"
+    ],
+    "directory": "/Users/jjszaniszlo/Dev/EMULATION/chip8C",
+    "file": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/src/render/render_init.c",
+    "output": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/build/obj/render/render_init.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-g",
+      "-Wall",
+      "-D_THREAD_SAFE",
+      "-Iinclude",
+      "-I/opt/homebrew/include",
+      "-c",
+      "-o",
+      "build/obj/render/render_util.o",
+      "src/render/render_util.c"
+    ],
+    "directory": "/Users/jjszaniszlo/Dev/EMULATION/chip8C",
+    "file": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/src/render/render_util.c",
+    "output": "/Users/jjszaniszlo/Dev/EMULATION/chip8C/build/obj/render/render_util.o"
+  }
+]

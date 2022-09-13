@@ -1,6 +1,5 @@
 #include "app.h"
 
-#include "render/render.h"
 #include "cpu.h"
 
 #include <glad/glad.h>
@@ -9,14 +8,16 @@
 app_state g_state = {0};
 
 void app_init(void) {
-  cpu_init(&g_state.cpu, "roms/invaders.rom");
+  cpu_init(&g_state.cpu, "roms/tester.ch8");
   render_init();
 }
 
 void app_run(void) {
-  double chip_delay = 1.0f/60.0f;
+  double chip_delay = 1.0f/540.0f;
   double dt, current_time, past_time;
   past_time = glfwGetTime();
+  double dt2, current_time2, past_time2;
+  past_time2 = glfwGetTime();
 
   /* glfwSetKeyCallback(g_state.renderer.window, app_key_callback); */
   glfwSetInputMode(g_state.renderer.window, GLFW_STICKY_KEYS, 1);
@@ -25,9 +26,22 @@ void app_run(void) {
     current_time = glfwGetTime();
     dt = current_time - past_time;
 
-    /* if (dt > chip_delay) { */
-    /*   past_time = current_time; */
-    cpu_emulate(&g_state.cpu);
+    if (dt > chip_delay) {
+      past_time = current_time;
+      cpu_emulate(&g_state.cpu);
+    }
+
+    current_time2 = glfwGetTime();
+    dt2 = current_time2 - past_time2;
+
+    if (dt2 > (1.0f / 60.0f)) {
+      past_time2 = current_time2;
+      if (g_state.cpu.delay > 0)
+        g_state.cpu.delay--;
+
+      if (g_state.cpu.sound > 0)
+        g_state.cpu.sound--;
+    }
 
     render_begin();
 

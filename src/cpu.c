@@ -79,12 +79,6 @@ void cpu_emulate(cpu_state *state) {
 
   state->pc += 2;
 
-  if (state->delay > 0)
-    state->delay--;
-
-  if (state->sound > 0)
-    state->sound--;
-
   switch (isig) {
   case 0x00: cpu_op0(state, op); break;
   case 0x01: cpu_op1(state, op); break;
@@ -174,7 +168,6 @@ void cpu_render(cpu_state *state) {
 }
 
 void cpu_op0(cpu_state *state, const uint16_t opcode) {
-  uint16_t addr;
   switch (opcode) {
   case 0x00E0: // clear screen 0x00E0
     for (int j = 0; j < 32; j++) {
