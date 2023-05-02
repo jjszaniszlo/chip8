@@ -148,9 +148,6 @@ void cpu_render(cpu_state *state) {
   for (int j = 0; j < 32; j++) {
     for (int i = 0; i < 64; i++) {
       if (state->screen[i + j * 64] > 0) {
-        /* render_quad((vec2){i * 16 + 8, 32 * 16 - j * 16 - 8}, (vec2){16, 16},
-         */
-        /*             (vec4){0.01, 0.5, 0.5, 1}); */
         r.x = i * 16;
         r.y = j * 16;
         SDL_RenderFillRect(g_state.render.renderer, &r);
