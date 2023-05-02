@@ -1,17 +1,15 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include <linmath.h>
+#include "cpu.h"
+#include <stdbool.h>
+#include <SDL2/SDL.h>
 
 typedef struct {
-  GLFWwindow *window;
-  float width;
-  float height;
+  SDL_Window *window;
+  SDL_Renderer *renderer;
+  uint32_t w;
+  uint32_t h;
 } render_state;
 
-void render_init(void);
-void render_begin(void);
-void render_end(void);
-void render_quad(vec2 pos, vec2 size, vec4 color);
+bool render_init(render_state *state);
+void render_destroy();

@@ -5,7 +5,7 @@ BUILD_EXECUTABLE=main
 INCLUDE_DIR:=include /opt/homebrew/include
 
 LIB_DIR:=/opt/homebrew/lib
-LIBS:=glfw
+LIBS:=sdl2 sdl2_image sdl2_ttf
 
 CXX=gcc
 SRC_EXT=c

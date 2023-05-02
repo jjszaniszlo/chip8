@@ -50,8 +50,7 @@ void load_fonts(cpu_state *state);
 void cpu_init(cpu_state *state, const char *rom);
 void cpu_emulate(cpu_state *state);
 void cpu_print_state(cpu_state *state);
-void cpu_keyhandle(cpu_state *state, int key, int scancode, int action, int mods);
-void cpu_input(cpu_state *state);
+void cpu_keyhandle(cpu_state *state, int key, int action);
 void cpu_render(cpu_state *state);
 
 

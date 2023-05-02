@@ -5,8 +5,9 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "SDL2/SDL_keyboard.h"
+#include "SDL2/SDL_render.h"
 #include "app.h"
-#include "render/render.h"
 #include <linmath.h>
 
 /* #define DEBUG */
@@ -72,12 +73,14 @@ void cpu_emulate(cpu_state *state) {
   uint16_t op;
   uint8_t isig;
 
-  cpu_input(state);
-
   op = (state->memory[state->pc] << 8u) | state->memory[state->pc + 1u];
   isig = (op & 0xf000) >> 12u; // get the instruction nib.
 
   state->pc += 2;
+
+  if (state->delay > 0) state->delay--;
+
+  if (state->sound > 0) state->sound--;
 
   switch (isig) {
   case 0x00: cpu_op0(state, op); break;
@@ -115,53 +118,42 @@ void cpu_print_state(cpu_state *state) {
     printf("v%d: 0x%x\n", i, state->v[i]);
 }
 
-void cpu_keyhandle(cpu_state *state, int key, int scancode, int action,
-                   int mods) {
+void cpu_keyhandle(cpu_state *state, int key, int action) {
   switch (key) {
-  case GLFW_KEY_1: state->keypad[0] = action; break;
-  case GLFW_KEY_2: state->keypad[1] = action; break;
-  case GLFW_KEY_3: state->keypad[2] = action; break;
-  case GLFW_KEY_4: state->keypad[3] = action; break;
-  case GLFW_KEY_Q: state->keypad[4] = action; break;
-  case GLFW_KEY_W: state->keypad[5] = action; break;
-  case GLFW_KEY_E: state->keypad[6] = action; break;
-  case GLFW_KEY_R: state->keypad[7] = action; break;
-  case GLFW_KEY_A: state->keypad[8] = action; break;
-  case GLFW_KEY_S: state->keypad[9] = action; break;
-  case GLFW_KEY_D: state->keypad[10] = action; break;
-  case GLFW_KEY_F: state->keypad[11] = action; break;
-  case GLFW_KEY_Z: state->keypad[12] = action; break;
-  case GLFW_KEY_X: state->keypad[13] = action; break;
-  case GLFW_KEY_C: state->keypad[14] = action; break;
-  case GLFW_KEY_V: state->keypad[15] = action; break;
+  case SDL_SCANCODE_1: state->keypad[0] = action; break;
+  case SDL_SCANCODE_2: state->keypad[1] = action; break;
+  case SDL_SCANCODE_3: state->keypad[2] = action; break;
+  case SDL_SCANCODE_4: state->keypad[3] = action; break;
+  case SDL_SCANCODE_Q: state->keypad[4] = action; break;
+  case SDL_SCANCODE_W: state->keypad[5] = action; break;
+  case SDL_SCANCODE_E: state->keypad[6] = action; break;
+  case SDL_SCANCODE_R: state->keypad[7] = action; break;
+  case SDL_SCANCODE_A: state->keypad[8] = action; break;
+  case SDL_SCANCODE_S: state->keypad[9] = action; break;
+  case SDL_SCANCODE_D: state->keypad[10] = action; break;
+  case SDL_SCANCODE_F: state->keypad[11] = action; break;
+  case SDL_SCANCODE_Z: state->keypad[12] = action; break;
+  case SDL_SCANCODE_X: state->keypad[13] = action; break;
+  case SDL_SCANCODE_C: state->keypad[14] = action; break;
+  case SDL_SCANCODE_V: state->keypad[15] = action; break;
   }
-}
-
-void cpu_input(cpu_state *state) {
-  state->keypad[0x1] = glfwGetKey(g_state.renderer.window, GLFW_KEY_1);
-  state->keypad[0x2] = glfwGetKey(g_state.renderer.window, GLFW_KEY_2);
-  state->keypad[0x3] = glfwGetKey(g_state.renderer.window, GLFW_KEY_3);
-  state->keypad[0xC] = glfwGetKey(g_state.renderer.window, GLFW_KEY_4);
-  state->keypad[0x4] = glfwGetKey(g_state.renderer.window, GLFW_KEY_Q);
-  state->keypad[0x5] = glfwGetKey(g_state.renderer.window, GLFW_KEY_W);
-  state->keypad[0x6] = glfwGetKey(g_state.renderer.window, GLFW_KEY_E);
-  state->keypad[0xD] = glfwGetKey(g_state.renderer.window, GLFW_KEY_R);
-  state->keypad[0x7] = glfwGetKey(g_state.renderer.window, GLFW_KEY_A);
-  state->keypad[0x8] = glfwGetKey(g_state.renderer.window, GLFW_KEY_S);
-  state->keypad[0x9] = glfwGetKey(g_state.renderer.window, GLFW_KEY_D);
-  state->keypad[0xE] = glfwGetKey(g_state.renderer.window, GLFW_KEY_F);
-  state->keypad[0xA] = glfwGetKey(g_state.renderer.window, GLFW_KEY_Z);
-  state->keypad[0x0] = glfwGetKey(g_state.renderer.window, GLFW_KEY_X);
-  state->keypad[0xB] = glfwGetKey(g_state.renderer.window, GLFW_KEY_C);
-  state->keypad[0xF] = glfwGetKey(g_state.renderer.window, GLFW_KEY_V);
+  printf("key: %s = %d\n", SDL_GetScancodeName(key), action);
 }
 
 void cpu_render(cpu_state *state) {
+  SDL_SetRenderDrawColor(g_state.render.renderer, 255, 255, 255, 255);
+  SDL_Rect r = {0};
+  r.w = 16;
+  r.h = 16;
   for (int j = 0; j < 32; j++) {
     for (int i = 0; i < 64; i++) {
       if (state->screen[i + j * 64] > 0) {
-        render_quad((vec2){i * 16 + 8, 32 * 16 - j * 16 - 8}, (vec2){16, 16},
-                    (vec4){0.01, 0.5, 0.5, 1});
+        /* render_quad((vec2){i * 16 + 8, 32 * 16 - j * 16 - 8}, (vec2){16, 16},
+         */
+        /*             (vec4){0.01, 0.5, 0.5, 1}); */
+        r.x = i * 16;
+        r.y = j * 16;
+        SDL_RenderFillRect(g_state.render.renderer, &r);
       }
     }
   }
@@ -215,8 +207,7 @@ void cpu_op3(cpu_state *state, const uint16_t opcode) {
   // 0x3xnn skip next instruction if Vx == nn.
   uint8_t x = (opcode & 0x0F00) >> 8;
   uint8_t nn = opcode & 0x00FF;
-  if (state->v[x] == nn)
-    state->pc += 2;
+  if (state->v[x] == nn) state->pc += 2;
 #ifdef DEBUG
   PRINTI("0x3xnn", opcode);
 #endif
@@ -227,8 +218,7 @@ void cpu_op4(cpu_state *state, const uint16_t opcode) {
   // 0x4xnn skip next instruction if Vx != nn.
   uint8_t x = (opcode & 0x0F00) >> 8;
   uint8_t nn = opcode & 0x00FF;
-  if (state->v[x] != nn)
-    state->pc += 2;
+  if (state->v[x] != nn) state->pc += 2;
 #ifdef DEBUG
   PRINTI("0x4xnn", opcode);
 #endif
@@ -239,8 +229,7 @@ void cpu_op5(cpu_state *state, const uint16_t opcode) {
   // 0x5xy0 skip next instruction if Vx == Vy.
   uint8_t x = (opcode & 0x0F00) >> 8;
   uint8_t y = (opcode & 0x00F0) >> 8;
-  if (state->v[x] == state->v[y])
-    state->pc += 2;
+  if (state->v[x] == state->v[y]) state->pc += 2;
   if ((opcode & 0x000F) != 0x0000) {
     printf("error: malformed instruction! %x\n", opcode);
   }
@@ -301,10 +290,8 @@ void cpu_op8(cpu_state *state, const uint16_t opcode) {
     // 0 when not. Vx += Vy
     val = state->v[x] + state->v[y];
 
-    if (val > 255)
-      state->vf = 0x1;
-    else
-      state->vf = 0x0;
+    if (val > 255) state->vf = 0x1;
+    else state->vf = 0x0;
 
     state->v[x] = val & 0xff;
     break;
@@ -312,10 +299,8 @@ void cpu_op8(cpu_state *state, const uint16_t opcode) {
     // 0x8xy5 subtracts the value of Vy to Vx. Vf set to 0 when there is a
     // borrow and 1 when not. Vx -= Vy
 
-    if (state->v[x] > state->v[y])
-      state->vf = 0x1;
-    else
-      state->vf = 0x0;
+    if (state->v[x] > state->v[y]) state->vf = 0x1;
+    else state->vf = 0x0;
 
     state->v[x] -= state->v[y];
     break;
@@ -329,10 +314,8 @@ void cpu_op8(cpu_state *state, const uint16_t opcode) {
     // 0x8xy7 sets Vx to Vy minus Vx. VF is set to 0 when there is a borrow and
     // 1 when not. Vx = Vy - Vx.
 
-    if (state->v[y] > state->v[x])
-      state->vf = 0x1;
-    else
-      state->vf = 0x0;
+    if (state->v[y] > state->v[x]) state->vf = 0x1;
+    else state->vf = 0x0;
 
     state->v[x] = state->v[y] - state->v[x];
     break;
@@ -354,8 +337,7 @@ void cpu_op9(cpu_state *state, const uint16_t opcode) {
   // 0x9xy0 skips the next instruction if vX does not equal vY.
   uint8_t x = (opcode & 0x0F00) >> 8;
   uint8_t y = (opcode & 0x00F0) >> 4;
-  if (state->v[x] != state->v[y])
-    state->pc += 2;
+  if (state->v[x] != state->v[y]) state->pc += 2;
 #ifdef DEBUG
   PRINTI("0x9xy0", opcode);
 #endif
@@ -421,9 +403,7 @@ void cpu_opd(cpu_state *state, const uint16_t opcode) {
 
       if (sprite_pixel) {
         // collision
-        if (*screen_pixel == 0xFF) {
-          state->vf = 1;
-        }
+        if (*screen_pixel == 0xFF) { state->vf = 1; }
         *screen_pixel ^= 0xFF;
       }
     }
@@ -444,13 +424,11 @@ void cpu_ope(cpu_state *state, const uint16_t opcode) {
   switch (isig) {
   case 0x9e:
     // skip next instruction if key stored in Vx is pressed
-    if (state->keypad[state->v[x]] > 0)
-      state->pc += 2;
+    if (state->keypad[state->v[x]] > 0) state->pc += 2;
     break;
   case 0xa1:
     // skip next instruction if key stored in Vx is not pressed
-    if (state->keypad[state->v[x]] == 0)
-      state->pc += 2;
+    if (state->keypad[state->v[x]] == 0) state->pc += 2;
     break;
   default:
     printf("error: malformed instruction starting with e\n");
