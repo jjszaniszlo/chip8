@@ -1,66 +1,85 @@
 #include "app.h"
+#include "SDL2/SDL_render.h"
+#include "render/render.h"
 
 #include "cpu.h"
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 app_state g_state = {0};
 
 void app_init(void) {
   cpu_init(&g_state.cpu, "roms/tester.ch8");
-  render_init();
+  render_init(&g_state.render);
+}
+
+typedef struct {
+  double ctime, ptime, dt;
+} deltatime;
+
+void init_dt(deltatime *dt) {
+  dt->ptime = SDL_GetTicks();
+}
+
+void calc_dt(deltatime *dt) {
+  dt->ctime = SDL_GetTicks();
+  dt->dt = dt->ctime - dt->ptime;
+}
+
+bool is_dt_over(deltatime *dt, long value) {
+  return dt->dt > value;
 }
 
 void app_run(void) {
-  double chip_delay = 1.0f/540.0f;
-  double dt, current_time, past_time;
-  past_time = glfwGetTime();
-  double dt2, current_time2, past_time2;
-  past_time2 = glfwGetTime();
+  SDL_Event e;
+  bool should_quit = false;
 
-  /* glfwSetKeyCallback(g_state.renderer.window, app_key_callback); */
-  glfwSetInputMode(g_state.renderer.window, GLFW_STICKY_KEYS, 1);
+  // two timers for 60hz and 540hz.
+  deltatime dt1 = {0};
+  init_dt(&dt1);
+  deltatime dt2 = {0};
+  init_dt(&dt2);
 
   do {
-    current_time = glfwGetTime();
-    dt = current_time - past_time;
+    calc_dt(&dt1);
+    calc_dt(&dt2);
 
-    if (dt > chip_delay) {
-      past_time = current_time;
+    // cycle cpu every 540hz.
+    if (is_dt_over(&dt1, (long)(1.0l / 540.0l))) {
+      dt1.ptime = SDL_GetTicks();
       cpu_emulate(&g_state.cpu);
     }
 
-    current_time2 = glfwGetTime();
-    dt2 = current_time2 - past_time2;
-
-    if (dt2 > (1.0f / 60.0f)) {
-      past_time2 = current_time2;
-      if (g_state.cpu.delay > 0)
-        g_state.cpu.delay--;
-
-      if (g_state.cpu.sound > 0)
-        g_state.cpu.sound--;
+    // decrement every 60hz
+    if (is_dt_over(&dt2, (long)(1.0l / 60.0l))) {
+      dt2.ptime = SDL_GetTicks();
+      if (g_state.cpu.delay > 0) g_state.cpu.delay--;
+      if (g_state.cpu.sound > 0) g_state.cpu.sound--;
     }
 
-    render_begin();
+    // handle events
+    while (SDL_PollEvent(&e)) {
+      switch (e.type) {
+      case SDL_QUIT: should_quit = true; break;
+      case SDL_KEYDOWN:
+        cpu_keyhandle(&g_state.cpu, e.key.keysym.scancode, true);
+        break;
+      case SDL_KEYUP:
+        cpu_keyhandle(&g_state.cpu, e.key.keysym.scancode, false);
+        break;
+      }
+    }
 
+    // clear screen.
+    SDL_SetRenderDrawColor(g_state.render.renderer, 0, 0, 0, 255);
+    SDL_RenderClear(g_state.render.renderer);
+
+    // draw cpu scren buffer.
     cpu_render(&g_state.cpu);
-    
-    render_end();
 
-    glfwPollEvents();
-  } while (glfwGetKey(g_state.renderer.window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-           glfwWindowShouldClose(g_state.renderer.window) == 0);
-
-  /* cpu_print_state(&g_state.cpu); */
+    // swap buffers and present.
+    SDL_RenderPresent(g_state.render.renderer);
+  } while (!should_quit);
 }
 
 void app_destroy(void) {
-  glfwDestroyWindow(g_state.renderer.window);
-  glfwTerminate();
-}
-
-void app_key_callback(GLFWwindow *w, int key, int scancode, int action, int mods) {
-  cpu_keyhandle(&g_state.cpu, key, scancode, action, mods);
+  render_destroy(&g_state.render);
 }
